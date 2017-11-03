@@ -100,7 +100,7 @@ int main() {
     packet_buffer[packet_index++] = PACKET_SPACE; //stop bit
     packet_buffer[packet_index++] = START_BURST;
     packet_buffer[packet_index++] = START_SPACE;
-    packet_index = charbuf2array(cmd.packet, sizeof (cmd.packet), packet_buffer, packet_index, DAIK_PACKET_SIZE);
+    packet_index = charbuf2array(second_packet, sizeof (second_packet), packet_buffer, packet_index, DAIK_PACKET_SIZE);
     packet_buffer[packet_index++] = BURST_LENGTH; //stop bit
 
     printf("Total packet size %d %d\r\n", sizeof (daikin_command_t), packet_index);

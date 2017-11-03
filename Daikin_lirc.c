@@ -80,6 +80,23 @@ int charbuf2array(const unsigned char *src, size_t srclen, int *dest, int dest_f
 
 }
 
+void daikin_command_initialize(daikin_command_t *cmd){
+	unsigned char second_packet[13] = {17, 218, 39, 0, 211, 65, 0, 0, 0, 28, 3, 8, 77}; //packet initializer
+	int i;
+	for(i=0;i<13;i++){
+		cmd->packet[i]=second_packet[i];
+	}
+}
+
+void daikin_command_calculate_checksum(daikin_command_t *cmd){
+	unsigned char sum=0;
+	int i;
+		for(i=0;i<12;i++){
+		sum+=cmd->packet[i];
+	}
+	cmd->bf.checksum=sum;
+}
+
 int main() {
     int fd;
     int freq = 33333;
@@ -87,10 +104,12 @@ int main() {
     int packet_buffer[DAIK_PACKET_SIZE];
     int packet_index = 0;
     daikin_command_t cmd;
+    daikin_command_initialize(&cmd);
     cmd.bf.on_off=1;
-    cmd.bf.fanspeed=3;
     cmd.bf.temperature=10;
     cmd.bf.swing=1;
+    daikin_command_calculate_checksum(&cmd);
+    printf("Sending command: ON=%d Mode=%d Swing=%d Powerful=%d Temp=%d FanSpeed=%d FanAuto=%d Check=%d\r\n",cmd.bf.on_off,cmd.bf.mode,cmd.bf.swing,cmd.bf.powerful,cmd.bf.temperature+10,cmd.bf.fanspeed,cmd.bf.fanauto,cmd.bf.checksum);
     
     packet_buffer[packet_index++] = START_BURST;
     packet_buffer[packet_index++] = START_SPACE;
